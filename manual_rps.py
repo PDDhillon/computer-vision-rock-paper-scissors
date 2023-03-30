@@ -8,7 +8,7 @@ def get_user_choice():
     return input("Rock, Paper or Scissors?")
 
 def computer_wins():
-    print("You lost!")
+    print("You lost")
 
 def user_wins():
     print("You win!")
