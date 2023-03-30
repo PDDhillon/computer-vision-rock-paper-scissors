@@ -11,7 +11,7 @@ def computer_wins():
     print("You lost")
 
 def user_wins():
-    print("You win!")
+    print("You won!")
 
 def get_winner(computer_choice,user_choice):
     if(computer_choice == user_choice):
