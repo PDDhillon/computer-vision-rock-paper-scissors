@@ -8,10 +8,10 @@ def get_user_choice():
     return input("Rock, Paper or Scissors?")
 
 def computer_wins():
-    print("You Lost!")
+    print("You lost!")
 
 def user_wins():
-    print("You Win!")
+    print("You win!")
 
 def get_winner(computer_choice,user_choice):
     if(computer_choice == user_choice):
