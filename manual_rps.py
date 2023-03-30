@@ -31,3 +31,8 @@ def get_winner(computer_choice,user_choice):
         user_wins()
       else:
         computer_wins()
+
+def play():
+   user_choice = get_user_choice()
+   computer_choice = get_computer_choice()
+   get_winner(computer_choice, user_choice)
