@@ -30,3 +30,4 @@ def get_normalised_image(frame):
         resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
         image_np = np.array(resized_frame)
         return (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
+
