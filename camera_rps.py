@@ -62,12 +62,13 @@ def get_winner(computer_choice,user_choice):
         return [1,0]  
       
 def get_prediction():
-    rounds_played = 5
-    current_round = 0
+    rounds_played = 0
     computer_wins = 0
     user_wins = 0
 
-    while(current_round < rounds_played and computer_wins < 3 and user_wins < 3):    
+    while(True):  
+        if (rounds_played == 5 or computer_wins == 3 or user_wins == 3):
+           break
         user_choice = get_user_prediction()
         computer_choice = get_computer_choice()
         winner = get_winner(computer_choice, user_choice)
@@ -75,5 +76,7 @@ def get_prediction():
             computer_wins += 1
         elif(np.argmax(winner) == 1):
             user_wins += 1
-        current_round += 1
+        rounds_played += 1
         print("Computer: ", computer_wins, " User:", user_wins)  
+
+#handle nothing scenario
