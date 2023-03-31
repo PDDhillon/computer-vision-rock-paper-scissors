@@ -1,5 +1,4 @@
 import random
-import camera_rps as cam
 
 def get_computer_choice():
     options = ["Rock","Paper","Scissors"]
