@@ -3,80 +3,73 @@ import random
 from keras.models import load_model
 import numpy as np
 import time
+from Classes.game import Game
+from Classes.user import User
+from Classes.computer import Computer
 
-def get_user_prediction():    
-    labels = ["Rock", "Scissors", "Paper", "Nothing"]
-    model = load_model('keras_model.h5')
-    cap = cv2.VideoCapture(0)
+def get_user_prediction(cap):    
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    start = time.time()
-    prediction = None
-    while not (int(time.time() - start) == 3):
-        ret, frame = cap.read()
-        normalised_image = get_normalised_image(frame)
-        data[0] = normalised_image
-        prediction = model.predict(data)
-        cv2.imshow('frame', frame)
+    previous = time.time()
+    TIMER = 3
+    while (TIMER >= 0):
+        current = time.time()
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-                    
-    # After the loop release the cap object
-    cap.release()
-    # Destroy all the windows
-    cv2.destroyAllWindows()
-    print(f"you chose {labels[np.argmax(prediction[0])]}")
+        ret, frame = cap.read()
+        cv2.putText(frame,str(TIMER), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_4)
+        normalised_image = get_normalised_image(frame)
+        data[0] = normalised_image
+        cv2.imshow('frame', frame)
+        if current-previous >= 1:
+                previous = current
+                TIMER = TIMER-1 
+    return data
 
 def get_normalised_image(frame):
         resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
         image_np = np.array(resized_frame)
         return (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
-
-def get_computer_choice():
-    options = ["Rock","Paper","Scissors"]
-    return random.choice(options)
-
-def get_winner(computer_choice,user_choice):
-    if(computer_choice == user_choice):
-      print("It is a tie!")
-      return [0,0]
-    if(computer_choice == "Rock"):
-      if(user_choice == "Paper"):
-        print("You won!")
-        return [0,1]
-      else:
-        print("You lost")
-        return [1,0]
-    elif(computer_choice == "Paper"):
-      if(user_choice == "Rock"):
-        print("You lost")
-        return [1,0]
-      else:
-        print("You won!")
-        return [0,1]
-    elif(computer_choice == "Scissors"):
-      if(user_choice == "Rock"):
-        print("You won!")
-        return [0,1]
-      else:
-        print("You lost")
-        return [1,0]  
       
 def get_prediction():
-    rounds_played = 0
-    computer_wins = 0
-    user_wins = 0
+    
+    labels = ["Rock", "Paper", "Scissors", "Nothing"]
+    user = User(0,'Nothing')
+    computer = Computer(0,'Nothing')
+    game = Game(5,3)
 
-    while(True):  
-        if (rounds_played == 5 or computer_wins == 3 or user_wins == 3):
+    model = load_model('keras_model.h5')
+    cap = cv2.VideoCapture(0)
+    
+    while True:  
+        if game.is_game_over(user._wins, computer._wins) == True:
            break
-        user_choice = get_user_prediction()
-        computer_choice = get_computer_choice()
-        winner = get_winner(computer_choice, user_choice)
-        if(np.argmax(winner) == 0):
-            computer_wins += 1
-        elif(np.argmax(winner) == 1):
-            user_wins += 1
-        rounds_played += 1
-        print("Computer: ", computer_wins, " User:", user_wins)  
+        
+        data = get_user_prediction(cap)        
+        prediction = model.predict(data)        
+        user._current_choice = labels[np.argmax(prediction[0])]   
+
+        result = game.get_winner(user._current_choice, computer.get_choice())    
+        game.played_rounds += 1
+
+        print("Round: ", game.played_rounds)
+        print("USR: ", user._current_choice)
+        print("CPU: ", computer._current_choice)
+
+        if(np.argmax(result) == 0):
+            user._wins += 1
+            print("USR wins!")
+        elif(np.argmax(result) == 1):
+            computer._wins += 1
+            print("CPU wins")
+
+        print("USR ", user._wins, " - ", computer._wins, " CPU")
+    
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 #handle nothing scenario
+
+#TO DO: Score not updating correctly
+#TO DO: Add screen data too
+get_prediction()
