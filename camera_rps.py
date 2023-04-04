@@ -1,10 +1,8 @@
-import cv2
 from keras.models import load_model
+import cv2
 import numpy as np
 import time
-from Classes.game import Game
-from Classes.user import User
-from Classes.computer import Computer
+import Classes.RPS as rps
 
 def get_user_prediction(cap):    
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
@@ -31,9 +29,9 @@ def get_normalised_image(frame):
       
 def get_prediction():    
     labels = ["Rock", "Paper", "Scissors", "Nothing"]
-    user = User(0,'Nothing')
-    computer = Computer(0,'Nothing')
-    game = Game(5,3)
+    user = rps.User(0,'Nothing')
+    computer = rps.Computer(0,'Nothing')
+    game = rps.Game(5,3)
     model = load_model('keras_model.h5')
     cap = cv2.VideoCapture(0)    
     while True:  
@@ -43,9 +41,9 @@ def get_prediction():
         prediction = model.predict(data)        
         user._current_choice = labels[np.argmax(prediction[0])]   
         result = game.get_winner(user._current_choice, computer.get_choice())    
-        game.played_rounds += 1
+        game._played_rounds += 1
         print("******************************")
-        print("Round: ", game.played_rounds)
+        print("Round: ", game._played_rounds)
         print("USR: ", user._current_choice)
         print("CPU: ", computer._current_choice)
         if(np.argmax(result) == 0):
