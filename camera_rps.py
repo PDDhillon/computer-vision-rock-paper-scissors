@@ -1,5 +1,4 @@
 import cv2
-import random
 from keras.models import load_model
 import numpy as np
 import time
@@ -26,50 +25,36 @@ def get_user_prediction(cap):
     return data
 
 def get_normalised_image(frame):
-        resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
+        resized_frame = cv2.resize(cv2.flip(frame, 1), (224, 224), interpolation = cv2.INTER_AREA)
         image_np = np.array(resized_frame)
         return (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
       
-def get_prediction():
-    
+def get_prediction():    
     labels = ["Rock", "Paper", "Scissors", "Nothing"]
     user = User(0,'Nothing')
     computer = Computer(0,'Nothing')
     game = Game(5,3)
-
     model = load_model('keras_model.h5')
-    cap = cv2.VideoCapture(0)
-    
+    cap = cv2.VideoCapture(0)    
     while True:  
         if game.is_game_over(user._wins, computer._wins) == True:
-           break
-        
+           break        
         data = get_user_prediction(cap)        
         prediction = model.predict(data)        
         user._current_choice = labels[np.argmax(prediction[0])]   
-
         result = game.get_winner(user._current_choice, computer.get_choice())    
         game.played_rounds += 1
-
+        print("******************************")
         print("Round: ", game.played_rounds)
         print("USR: ", user._current_choice)
         print("CPU: ", computer._current_choice)
-
         if(np.argmax(result) == 0):
             user._wins += 1
             print("USR wins!")
         elif(np.argmax(result) == 1):
             computer._wins += 1
             print("CPU wins")
-
         print("USR ", user._wins, " - ", computer._wins, " CPU")
-    
+        print("******************************")    
     cap.release()
     cv2.destroyAllWindows()
-
-
-#handle nothing scenario
-
-#TO DO: Score not updating correctly
-#TO DO: Add screen data too
-get_prediction()

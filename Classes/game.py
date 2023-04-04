@@ -11,7 +11,7 @@ class Game:
 
     def get_winner(self, user_choice ,computer_choice):    
         '''Gets the winner of the game. The method returns an array where each position represents an end condition. 0th pos represents a USR win, 1st a CPU win and 2nd a draw. '''    
-        if(computer_choice == user_choice or user_choice):
+        if(computer_choice == user_choice or user_choice == 'Nothing'):
             return [0,0,1]
         if(computer_choice == "Rock"):
             if(user_choice == "Paper"):
