@@ -56,3 +56,5 @@ def get_prediction():
         print("******************************")    
     cap.release()
     cv2.destroyAllWindows()
+
+get_prediction()
